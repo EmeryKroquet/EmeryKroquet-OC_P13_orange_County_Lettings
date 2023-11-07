@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'lettings',
     'profiles',
     'home',
+    # 'oc_lettings_site',
 ]
 
 MIDDLEWARE = [

@@ -12,7 +12,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.x]
+        python-version: [ 3.6, 3.7, 3.8 ]
 
     env:
       MODE: ${{ secrets.MODE }}
@@ -34,10 +34,10 @@ jobs:
 
       - name: Restart Gunicorn
         run: |
-             sudo systemctl daemon-reload
-             sudo systemctl enable gunicorn.service
-             sudo systemctl start gunicorn.service
-
+          sudo systemctl daemon-reload
+          sudo systemctl restart gunicorn
+      
+      
 
       - name: Collect static files
         run: python manage.py collectstatic --noinput

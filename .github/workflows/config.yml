@@ -2,41 +2,48 @@ name: Django CI/CD
 
 on:
   push:
-    branches:
-      - main # Vous pouvez changer le nom de la branche si nécessaire
+    branches: ["main"]
   pull_request:
-    branches:
-      - main # Vous pouvez changer le nom de la branche si nécessaire
+    branches: ["main"]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./oc_lettings_site
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [3.7, 3.8, 3.9]
 
     env:
-      MODE: "dev"
+      MODE: ${{ secrets.MODE }}
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
         with:
-          python-version: 3.x # Choisissez la version de Python que vous souhaitez utiliser
-
-      - name: Install dependencies
+          python-version: ${{ matrix.python-version }}
+      - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r ../requirements.txt
-
-      - name: Run tests
+          pip install -r requirements.txt
+      - name: Run Tests
         run: |
           python manage.py test
 
-      - name: Deploy to Production # Vous pouvez personnaliser cette étape pour le déploiement sur votre serveur de production
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main' # Déployer uniquement sur la branche principale après un push
-        run: |
-          # Commandes de déploiement sur votre serveur de production
+      - name: Restart Gunicorn
+        run: sudo systemctl restart gunicorn
+
+      - name: Collect static files
+        run: python manage.py collectstatic --noinput
+
+      - name: Apply database migrations
+        run: python manage.py migrate
+
+      - name: Build and push Docker Image
+        uses: mr-smithers-excellent/docker-build-push@v6
+        with:
+          image: emerykroquet/oc-ettings-site
+          registry: docker.io
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}

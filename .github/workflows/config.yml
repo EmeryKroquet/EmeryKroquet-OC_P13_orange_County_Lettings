@@ -33,7 +33,10 @@ jobs:
           python manage.py test
 
       - name: Restart Gunicorn
-        run: gunicorn oc-lettings-site.wsgi:application --bind 0.0.0.0:8000
+        run: sudo apt-get install gunicorn -y
+        run: sudo systemctl daemon-reload
+        run: sudo systemctl enable gunicorn.service
+        run: sudo systemctl start gunicorn.service
 
       - name: Collect static files
         run: python manage.py collectstatic --noinput

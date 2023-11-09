@@ -33,7 +33,8 @@ jobs:
           python manage.py test
 
       - name: Restart Gunicorn
-        run: sudo systemctl daemon-reload
+        run: |
+             sudo systemctl daemon-reload
              sudo systemctl enable gunicorn.service
              sudo systemctl start gunicorn.service
 

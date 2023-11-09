@@ -36,6 +36,7 @@ jobs:
         run: |
           sudo systemctl daemon-reload
           sudo systemctl restart gunicorn
+          sudo systemctl gunicorn3.service
       
       
 

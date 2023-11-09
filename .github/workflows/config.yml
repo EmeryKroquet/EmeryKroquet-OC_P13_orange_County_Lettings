@@ -33,7 +33,7 @@ jobs:
           python manage.py test
 
       - name: Restart Gunicorn
-        run: sudo systemctl restart gunicorn
+        run: gunicorn oc-lettings-site.wsgi:application --bind 0.0.0.0:8000
 
       - name: Collect static files
         run: python manage.py collectstatic --noinput

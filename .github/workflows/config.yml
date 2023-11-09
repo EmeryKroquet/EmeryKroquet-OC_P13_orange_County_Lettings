@@ -16,7 +16,7 @@ jobs:
         working-directory: ./oc_lettings_site
 
     env:
-      MODE: "dev"
+      MODE: ${{ secrets.MODE }}
 
     steps:
       - name: Checkout repository

@@ -1,13 +1,11 @@
 from django.urls import path
 from . import views
+# from lettings.views import Letting
 
-
-# def trigger_error(request):
-#   division_by_zero = 1 / 0
-
+app_name = 'lettings'
 
 urlpatterns = [
-    path('lettings/', views.lettings_index, name='lettings'),
+    path('', views.index, name='index'),
     # Détails d'une location par son ID
     path('lettings/<int:letting_id>/', views.letting, name='letting'),
 

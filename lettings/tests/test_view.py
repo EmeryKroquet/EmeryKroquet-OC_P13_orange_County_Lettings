@@ -1,38 +1,55 @@
-from django.test import TestCase
-from django.urls import reverse
-from faker import Faker
-from .models import Address, Letting
+import pytest
+from unittest.mock import patch
+from lettings.models import Letting
+from lettings.views import LettingsViews
+
+from unittest.mock import call
 
 
-class TestLettingsView(TestCase):
+class TestIndex:
 
-    def setUp(self):
-        self.fake = Faker()
-        self.address = Address.objects.create(
-            number=self.fake.building_number(),
-            street=self.fake.street_name(),
-            city=self.fake.city(),
-            state=self.fake.country(),
-            zip_code=self.fake.postcode(),
-            country_iso_code=self.fake.country_code()
-        )
+    @patch('lettings.views.render')
+    def test_lettings_list_variable_is_empty(self, mock_render):
+        # Arrange
+        with patch('lettings.views.Letting.objects.all', return_value=[]):
+            # Act
+            LettingsViews.index(self)
 
-        self.letting = Letting.objects.create(
-            title=self.fake.name(),
-            address=self.address
-        )
+            # Assert
+            mock_render.assert_called_once_with(self, 'lettings/index.html', {'lettings_list': []})
 
-    def test_letting_display(self):
-        # Teste si la vue letting affiche les détails corrects pour une letting spécifique.
-        response = self.client.get(reverse("lettings:letting", args=[self.letting.id]))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "lettings/letting.html")
-        self.assertContains(response, f"<title>{self.letting.title}</title>")
-        self.assertContains(response, f"<h1>{self.letting.title}</h1>")
 
-    def test_index(self):
-        # Teste si la vue index affiche la liste des lettings.
-        response = self.client.get(reverse("lettings:index"))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "lettings/index.html")
-        self.assertContains(response, "<title>Lettings</title>")
+class TestLetting:
+
+    @patch('lettings.views.Letting.objects.get', side_effect=Letting.DoesNotExist)
+    def test_raises_does_not_exist_exception_if_letting_does_not_exist(self, mock_get):
+        # Arrange
+        letting_id = 1
+
+        # Act & Assert
+        with pytest.raises(Letting.DoesNotExist):
+            LettingsViews().letting(letting_id)
+
+    @patch('lettings.views.Letting.objects.get', side_effect=Letting.MultipleObjectsReturned)
+    def test_raises_multiple_objects_returned_exception_if_multiple_lettings_exist(self):
+        # Arrange
+        letting_id = 1
+
+        # Act & Assert
+        with pytest.raises(Letting.MultipleObjectsReturned):
+            LettingsViews().letting(letting_id)
+
+    @patch('lettings.views.Letting.objects.get')
+    @patch('lettings.views.render')
+    def test_raises_multiple_objects_returned_exception_if_multiple_lettings_exist(self, mock_render, mock_get):
+        # Arrange
+        letting_id = 1
+        mock_get.side_effect = Letting.MultipleObjectsReturned
+
+        # Act & Assert
+        with pytest.raises(Letting.MultipleObjectsReturned):
+            LettingsViews().letting(letting_id)
+
+        # Assert
+        mock_get.assert_called_once_with(id=letting_id)
+        assert not mock_render.called

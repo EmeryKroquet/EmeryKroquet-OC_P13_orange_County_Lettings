@@ -12,3 +12,5 @@ pytest==7.4.3
 pytest-django==3.9.0
 pytz==2023.3.post1
 sqlparse==0.4.4
+
+Faker~=19.13.0

@@ -26,12 +26,37 @@ class Address(models.Model):
     country_iso_code = models.CharField(max_length=3, validators=[MinLengthValidator(3)])
 
     def __str__(self):
+        """
+        Return a string representation of the object.
+
+        Returns:
+            str: The string representation of the object.
+        """
+
         return f'{self.number} {self.street}'
 
 
 class Letting(models.Model):
+    """
+    Model representing a letting.
+
+    Attributes:
+        title (CharField): The title of the letting.
+        address (ForeignKey): The address associated with the letting.
+
+    Methods:
+        __str__: Returns a string representation of the letting.
+    """
+
     title = models.CharField(max_length=256)
     address = models.ForeignKey(Address, on_delete=models.CASCADE)
 
     def __str__(self):
+        """
+        Return a string representation of the object.
+
+        Returns:
+            str: The string representation of the object.
+        """
+
         return self.title

@@ -25,7 +25,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install Dependencies
         run: |
-          sudo apt-get install gunicorn -y
+          sudo apt-get install gunicorn3 -y
           python -m pip install --upgrade pip
           pip install -r ./requirements.txt
       - name: Run Tests
@@ -33,10 +33,10 @@ jobs:
           python manage.py test
 
       - name: Restart Gunicorn
-        run: sudo apt-get install gunicorn -y
-             sudo systemctl daemon-reload
+        run: sudo systemctl daemon-reload
              sudo systemctl enable gunicorn.service
              sudo systemctl start gunicorn.service
+
 
       - name: Collect static files
         run: python manage.py collectstatic --noinput

@@ -3,8 +3,6 @@ from unittest.mock import patch
 from lettings.models import Letting
 from lettings.views import LettingsViews
 
-from unittest.mock import call
-
 
 class TestIndex:
 
@@ -41,7 +39,8 @@ class TestLetting:
 
     @patch('lettings.views.Letting.objects.get')
     @patch('lettings.views.render')
-    def test_raises_multiple_objects_returned_exception_if_multiple_lettings_exist(self, mock_render, mock_get):
+    def test_raises_multiple_objects_returned_exception_if_multiple_lettings_exists(
+            self, mock_render, mock_get):
         # Arrange
         letting_id = 1
         mock_get.side_effect = Letting.MultipleObjectsReturned

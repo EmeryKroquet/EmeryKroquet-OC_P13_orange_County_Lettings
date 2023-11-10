@@ -1,4 +1,3 @@
-import pytest
 from ..models import Address, Letting
 from django.test import TestCase
 
@@ -187,8 +186,9 @@ class TestLetting(TestCase):
     def test_letting_creation_with_valid_title_and_address(self):
         # Arrange
         title = "Valid Title"
-        address = Address(number=123, street="Valid Street", city="Valid City", state="CA", zip_code=12345,
-                          country_iso_code="USA")
+        address = Address(
+            number=123, street="Valid Street", city="Valid City", state="CA", zip_code=12345,
+            country_iso_code="USA")
 
         # Act
         letting = Letting(title=title, address=address)
@@ -200,10 +200,11 @@ class TestLetting(TestCase):
     def test_letting_save_to_database(self):
         # Arrange
         title = "Valid Title"
-        address = Address.objects.create(number=123, street="Valid Street", city="Valid City", state="CA",
-                                         zip_code=12345,
-                                         country_iso_code="USA")
-        letting = Letting.objects.create(title=title, address=address)
+        address = Address.objects.create(
+            number=123, street="Valid Street", city="Valid City", state="CA",
+            zip_code=12345,
+            country_iso_code="USA")
+        Letting.objects.create(title=title, address=address)
 
         # Act & Assert
         assert Letting.objects.filter(title=title).exists()
@@ -211,9 +212,10 @@ class TestLetting(TestCase):
     def test_letting_retrieve_from_database(self):
         # Arrange
         title = "Valid Title"
-        address = Address.objects.create(number=123, street="Valid Street", city="Valid City", state="CA",
-                                         zip_code=12345,
-                                         country_iso_code="USA")
+        address = Address.objects.create(
+            number=123, street="Valid Street", city="Valid City", state="CA",
+            zip_code=12345,
+            country_iso_code="USA")
         letting = Letting.objects.create(title=title, address=address)
 
         # Act
@@ -221,4 +223,3 @@ class TestLetting(TestCase):
 
         # Assert
         assert retrieved_letting == letting
-

@@ -36,6 +36,3 @@ class LettingsViews:
             'address': letting.address,
         }
         return render(self, 'lettings/letting.html', context)
-
-
-

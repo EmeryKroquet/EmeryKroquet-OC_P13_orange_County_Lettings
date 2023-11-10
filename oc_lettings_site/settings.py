@@ -1,9 +1,16 @@
 import os
 
+import dotenv
+# from dotenv import load_dotenv
 from pathlib import Path
+
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+dotenv.load_dotenv()
 
 
 # Quick-start development settings - unsuitable for production
@@ -116,3 +123,10 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / "static",]
+
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
+sentry_sdk.init(
+    dsn=os.environ.get("SENTRY_DSN"),
+    integrations=[DjangoIntegration()],
+)

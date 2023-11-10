@@ -38,3 +38,6 @@ jobs:
       - name: Apply database migrations
         run: python manage.py migrate
 
+      - name: Lint with flake
+        run: |
+          flake8 .

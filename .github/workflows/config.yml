@@ -31,23 +31,10 @@ jobs:
         run: |
           python manage.py test
 
-   """   - name: Restart Gunicorn
-        run: |
-          sudo apt-get install gunicorn3 -y
-          sudo systemctl enable gunicorn.socket
-          sudo systemctl start gunicorn.socket
-          sudo systemctl status gunicorn.socket
-"""
+
       - name: Collect static files
         run: python manage.py collectstatic --noinput
 
       - name: Apply database migrations
         run: python manage.py migrate
 
-      - name: Build and push Docker Image
-        uses: mr-smithers-excellent/docker-build-push@v6
-        with:
-          image: emerykroquet/oc-ettings-site
-          registry: docker.io
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}

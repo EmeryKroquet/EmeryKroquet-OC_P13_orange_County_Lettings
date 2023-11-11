@@ -3,8 +3,6 @@ import os
 import dotenv
 # from dotenv import load_dotenv
 from pathlib import Path
-
-import env
 import sentry_sdk
 from gunicorn.config import Env
 from sentry_sdk.integrations.django import DjangoIntegration

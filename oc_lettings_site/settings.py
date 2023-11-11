@@ -1,9 +1,8 @@
 import os
-
+from environs import Env
 import dotenv
 from pathlib import Path
 
-import env
 import sentry_sdk
 from dotenv import load_dotenv
 from sentry_sdk.integrations.django import DjangoIntegration
@@ -14,7 +13,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 dotenv.load_dotenv()
 # Charge les variables d'environnement à partir d'un fichier .env
 load_dotenv()
-
+env = Env()
+env.read_env()
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 

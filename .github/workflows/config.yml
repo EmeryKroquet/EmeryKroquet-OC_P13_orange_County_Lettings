@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: ["main"]
 
+env:
+  DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
+  DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_PASSWORD }}
+  IMAGE_NAME: ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKERHUB_REPO }}:${{ github.sha }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -35,6 +40,37 @@ jobs:
         run: |
           python manage.py test
 
+  build-image:
+    needs: [build]
+    if: ${{ github.ref == 'refs/heads/main'}}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build docker image
+        run: |
+          docker build -t ${{ env.IMAGE_NAME }} .
+          docker save -o docker-image.tar ${{ env.IMAGE_NAME }}
+      - uses: actions/upload-artifact@v3
+        with:
+          name: p13docker
+          path: docker-image.tar
+
+  push-image:
+    needs: build-image
+    if: ${{ github.ref == 'refs/heads/main'}}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: p13docker
+
+      - name: Push docker image
+        run: |
+          docker load -i docker-image.tar
+          docker login -u ${{ env.DOCKERHUB_USERNAME }} -p ${{ env.DOCKERHUB_TOKEN }}
+          docker push ${{ env.IMAGE_NAME }}
+      
+
       - name: Collect static files
         run: python manage.py collectstatic --noinput
 
@@ -43,7 +79,8 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    name: deploy our django application to Heroku
+    name: deploy
+    needs: [build]
     steps:
       - name: checkout
         uses: actions/checkout@v3
@@ -54,3 +91,21 @@ jobs:
           heroku_email: "emery.kroquet@gmail.com"
           branch: "main"
 
+  deploy-heroku:
+    needs: push-image
+    if: ${{ github.ref == 'refs/heads/main'}}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Deploy docker image
+        env:
+          IMAGE_NAME: oc_lettings_site
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
+        run: |
+          docker build -t ${{ env.IMAGE_NAME }} .
+          docker tag ${{ env.IMAGE_NAME }} registry.heroku.com/${{ env.HEROKU_APP_NAME }}/web
+          echo ${{ env.HEROKU_API_KEY }}
+          docker login -u _ -p ${{ env.HEROKU_API_KEY }} registry.heroku.com
+          docker push registry.heroku.com/${{ env.HEROKU_APP_NAME }}/web
+          heroku container:release web -a ${{ env.HEROKU_APP_NAME }}

@@ -2,6 +2,9 @@
 
 Site web d'Orange County Lettings
 
+[![Documentation Status](https://readthedocs.org/projects/OC_P13_orange_County_Lettings/badge/?version=latest)]
+(https://OC_P13_orange_County_Lettings.readthedocs.io/en/latest/?badge=latest)
+
 ## Développement local
 
 ### Prérequis

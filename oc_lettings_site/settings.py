@@ -1,18 +1,19 @@
 import os
 
 import dotenv
-# from dotenv import load_dotenv
 from pathlib import Path
+
+import env
 import sentry_sdk
-from gunicorn.config import Env
+from dotenv import load_dotenv
 from sentry_sdk.integrations.django import DjangoIntegration
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 dotenv.load_dotenv()
-env = Env()
-env.read_env()
+# Charge les variables d'environnement à partir d'un fichier .env
+load_dotenv()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/

@@ -42,7 +42,7 @@ jobs:
           python manage.py test
 
   build-image:
-    needs: [build]
+    needs: [ build ]
     if: ${{ github.ref == 'refs/heads/main'}}
     runs-on: ubuntu-latest
     steps:
@@ -55,6 +55,7 @@ jobs:
         with:
           name: p13docker
           path: docker-image.tar
+
 
   push-image:
     needs: build-image

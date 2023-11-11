@@ -49,7 +49,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Build docker image
         run: |
-          docker buildx build -t ${{ env.IMAGE_NAME }} .
+          docker build -t ${{ env.IMAGE_NAME }} .
           docker save -o docker-image.tar ${{ env.IMAGE_NAME }}
       - uses: actions/upload-artifact@v3
         with:

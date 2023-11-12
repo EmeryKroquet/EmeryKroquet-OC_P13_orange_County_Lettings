@@ -13,3 +13,6 @@ urlpatterns = [
     path('', home_views.index, name='index'),  # URL pour la page d'accueil
     # Autres URLs pour les applications incluses
 ]
+
+handler500 = 'oc_lettings_site.views.handler500'
+handler404 = 'oc_lettings_site.views.handler404'
